@@ -13,6 +13,10 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-streaming" % sparkVersion % "compile",
   "org.apache.spark" %% "spark-streaming-kafka-0-8" % sparkVersion
     exclude("org.spark-project.spark", "unused"),
+  "org.apache.spark" %% "spark-streaming-flume" % sparkVersion
+    exclude("org.spark-project.spark", "unused"),
+//  "org.apache.spark" %% "spark-streaming-flume_2.11" % sparkVersion
+//    exclude("org.spark-project.spark", "unused"),
   "com.typesafe" % "config" % "1.3.1",
   "org.json4s" %% "json4s-jackson" % "3.2.11",
   "commons-lang" % "commons-lang" % "2.6",
