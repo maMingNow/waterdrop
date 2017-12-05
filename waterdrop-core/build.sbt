@@ -58,3 +58,7 @@ antlr4GenListener in Antlr4 := false
 antlr4GenVisitor in Antlr4 := true
 
 // resolved sbt assembly merging file conflicts.
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
