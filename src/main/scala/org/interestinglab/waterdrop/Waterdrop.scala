@@ -1,13 +1,13 @@
 package org.interestinglab.waterdrop
 
-import scala.collection.JavaConversions._
-import org.apache.spark.streaming._
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
+import org.apache.spark.sql.{Row, SparkSession}
+import org.apache.spark.streaming._
 import org.interestinglab.waterdrop.config.ConfigBuilder
 import org.interestinglab.waterdrop.filter.UdfRegister
 
+import scala.collection.JavaConversions._
 import scala.util.{Failure, Success, Try}
 
 object Waterdrop {
