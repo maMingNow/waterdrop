@@ -16,6 +16,7 @@ object Json {
 
   /**
    * Serialize Map[String, JValue] to Json String
+   * 压缩的更紧凑,将对象序列化成String
    */
   def serialize(e: Map[String, JValue]) : String = {
 

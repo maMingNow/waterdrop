@@ -7,12 +7,14 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.functions.col
 
+//对某一个列进行数据进行强制转换操作,转换成其他数据类型
 class Convert(var conf: Config) extends BaseFilter(conf) {
 
   def this() = {
     this(ConfigFactory.empty())
   }
 
+  //校验对哪个列进行数据转换,以及转换成什么数据类型
   override def checkConfig(): (Boolean, String) = {
     if (!conf.hasPath("source_field")) {
       (false, "please specify [source_field] as a non-empty string")

@@ -6,6 +6,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 abstract class BaseFilter(val initConfig: Config) extends Plugin {
 
+  //如何对一个DataFrame进行处理,产生新的DataFrame,新的DataFrame和老的DataFrame可以字段不一致,因此filter的顺序很重要
   def process(spark: SparkSession, df: DataFrame): DataFrame
 
   /**

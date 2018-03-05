@@ -17,7 +17,7 @@ import scala.collection.JavaConversions._
 class Kafka(config: Config) extends BaseInput(config) {
 
   // kafka consumer configuration : http://kafka.apache.org/documentation.html#oldconsumerconfigs
-  val consumerPrefix = "consumer"
+  val consumerPrefix = "consumer" //kafka配置文件的配置内容对象
 
   var offsetRanges = Array[OffsetRange]()
 
@@ -25,9 +25,10 @@ class Kafka(config: Config) extends BaseInput(config) {
 
   override def checkConfig(): (Boolean, String) = {
 
-    config.hasPath("topics") match {
+    config.hasPath("topics") match {//必须有topics属性
       case true => {
-        val consumerConfig = config.getConfig(consumerPrefix)
+        val consumerConfig = config.getConfig(consumerPrefix) //必须有kafka的配置信息
+	//kafka的配置信息必须有以下配置项
         consumerConfig.hasPath("zookeeper.connect") &&
           !consumerConfig.getString("zookeeper.connect").trim.isEmpty &&
           consumerConfig.hasPath("group.id") &&
@@ -44,20 +45,25 @@ class Kafka(config: Config) extends BaseInput(config) {
   override def getDStream(ssc: StreamingContext): DStream[(String, String)] = {
 
     val consumerConfig = config.getConfig(consumerPrefix)
+    //初始化kafka的配置文件内容
     val kafkaParams = consumerConfig
       .entrySet()
+      //初始化一个map对象,不断的循环配置文件,将内容添加到map中
       .foldRight(Map[String, String]())((entry, map) => {
         map + (entry.getKey -> entry.getValue.unwrapped().toString)
       })
 
+    //打印kafka的配置信息
     println("[INFO] Input Kafka Params:")
     for (entry <- kafkaParams) {
       val (key, value) = entry
       println("[INFO] \t" + key + " = " + value)
     }
 
+    //如何处理kafka的数据,将kafka的数据变成topic、数据内容组成的元组
     val messageHandler = (mmd: MessageAndMetadata[String, String]) => (mmd.topic, mmd.message())
 
+    //读取哪些topic信息
     val topics = config.getString("topics").split(",").toSet
     km = new KafkaManager(kafkaParams)
     val fromOffsets =
@@ -70,17 +76,19 @@ class Kafka(config: Config) extends BaseInput(config) {
       messageHandler)
 
     inputDStream.transform { rdd =>
-      offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
-      rdd
+      offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges //设置此时读取的kafka的offset位置
+      rdd //注意:返回的依然是RDD本身,因为接下来要处理kafka的rdd内容
     }
   }
-
+ 
+  //更新kafka的offset
   override def afterOutput {
     // update offset after output
     km.updateZKOffsetsFromoffsetRanges(offsetRanges)
   }
 }
 
+//kafka管理器
 class KafkaManager(val kafkaParams: Map[String, String]) extends Serializable {
 
   private val kc = new KafkaCluster(kafkaParams)
@@ -89,9 +97,9 @@ class KafkaManager(val kafkaParams: Map[String, String]) extends Serializable {
 
     val defaultOff = 10000000 // debug 在偏移的基础上再偏移10亿, 防止因为kafka删除过期log的原因导致读kafka topic出现 kafka.common.OffsetOutOfRangeException
 
-    topics.foreach(topic => {
+    topics.foreach(topic => {//获取每一个topic的内容
       var hasConsumed = true
-      val partitionsE = kc.getPartitions(Set(topic))
+      val partitionsE = kc.getPartitions(Set(topic))//获取topic的所有分区
       if (partitionsE.isLeft) {
         throw new SparkException(s"get kafka partition failed: ${partitionsE.left.get}")
       }
@@ -172,6 +180,7 @@ class KafkaManager(val kafkaParams: Map[String, String]) extends Serializable {
     consumerOffsetsE.right.get
   }
 
+  //更新最新的offset位置
   def updateZKOffsetsFromoffsetRanges(offsetRanges: Array[OffsetRange]): Unit = {
     val groupId = kafkaParams.get("group.id").get
 

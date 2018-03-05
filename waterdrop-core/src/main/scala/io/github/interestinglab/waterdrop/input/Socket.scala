@@ -27,7 +27,7 @@ class Socket(var config: Config) extends BaseInput(config) {
     ssc
       .socketTextStream(config.getString("host"), config.getInt("port"))
       .map(s => {
-        ("", s)
+        ("", s)//具体接收到的socket内容
       })
   }
 }

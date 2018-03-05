@@ -4,22 +4,23 @@ import java.nio.file.{Path, Paths}
 
 object Common {
 
-  val ALLOWED_MODES = List("client", "cluster")
+  val ALLOWED_MODES = List("client", "cluster") //允许的集群启动模式
 
-  private var mode: Option[String] = None
+  private var mode: Option[String] = None //启动模式
 
-  def isModeAllowed(mode: String): Boolean = {
+  def isModeAllowed(mode: String): Boolean = {//是否允许的启动模式
 
     ALLOWED_MODES.foldRight(false)((m, lastResult) => {
       lastResult match {
         case true => true
-        case false => mode.toLowerCase.equals(m)
+        case false => mode.toLowerCase.equals(m) //因为m是来自于ALLOWED_MODES,而ALLOWED_MODES里面都是小写的,因此将输入的进行小写后转换即可
       }
     })
   }
 
   /**
    * Set mode. return false in case of failure
+   * 设置成功后,则返回true
    * */
   def setDeployMode(mode: String): Boolean = {
 

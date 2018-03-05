@@ -14,6 +14,7 @@ import org.apache.spark.streaming.receiver.Receiver
 import scala.collection.JavaConversions._
 import scala.util.Random
 
+//伪造随机的接收数据内容--意义不是很大,主要用于测试
 class Fake(var config: Config) extends BaseInput(config) {
 
   override def checkConfig(): (Boolean, String) = {

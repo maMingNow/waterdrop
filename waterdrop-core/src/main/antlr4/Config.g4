@@ -13,6 +13,7 @@ grammar Config;
 
 import BoolExpr;
 
+//总配置文件
 config
     : COMMENT* 'spark' sparkBlock COMMENT* 'input' inputBlock COMMENT* 'filter' filterBlock COMMENT* 'output' outputBlock COMMENT* EOF
     ;
@@ -33,21 +34,25 @@ outputBlock
     : '{' statement* '}'
     ;
 
+//表示可以是插件,也可以是判断语句,也可以是备注
 statement
     : plugin
     | ifStatement
     | COMMENT
     ;
 
+//if表达式
 ifStatement
     : IF expression '{' statement* '}' (ELSE IF expression '{' statement* '}')* (ELSE '{' statement* '}')?
     ;
 
+//表示插件名字以及对应的配置内容
 plugin
     : IDENTIFIER entries
 //    : plugin_name entries
     ;
 
+//一个实体内容由{}包含,里面分别是由键值对配置组成,或者备注组测
 entries
     : '{' (pair | COMMENT)* '}'
     ;
@@ -57,15 +62,18 @@ entries
 //    | '{' '}'
 //    ;
 
+//一个key=value的键值对配置
 pair
     : IDENTIFIER '=' value
     ;
 
+//表示一个数组值,即[value,value]或者[]
 array
     : '[' value (',' value)* ']'
     | '[' ']'
     ;
 
+//具体存储的值
 value
     : DECIMAL
     | QUOTED_STRING
@@ -76,6 +84,7 @@ value
     | NULL
     ;
 
+//表示备注
 COMMENT
     : ('#' | '//') ~( '\r' | '\n' )* -> skip
     ;
@@ -94,6 +103,7 @@ NULL
     : 'null'
     ;
 
+//表示空格
 WS
     : [ \t\n\r]+ -> skip
     ;

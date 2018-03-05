@@ -5,15 +5,16 @@ import io.github.interestinglab.waterdrop.apis.BaseInput
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream.DStream
 
+//读取文件夹内容
 class File(config: Config) extends BaseInput(config) {
 
   override def checkConfig(): (Boolean, String) = {
-    config.hasPath("path") match {
+    config.hasPath("path") match {//必须有路径
       case true => {
 
         val dir = config.getString("path")
         val path = new org.apache.hadoop.fs.Path(dir)
-        Option(path.toUri.getScheme) match {
+        Option(path.toUri.getScheme) match {//路径的schema必须存在
           case None => (true, "")
           case Some(schema) => (true, "")
           case _ =>
